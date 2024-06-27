@@ -10,7 +10,8 @@ import { SubjectUtils } from "ether-email-auth/packages/contracts/src/libraries/
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
 import { EmailRecoveryManager } from "src/EmailRecoveryManager.sol";
-import { EmailRecoveryModule } from "src/modules/EmailRecoveryModule.sol";
+// import { EmailRecoveryModule } from "src/modules/EmailRecoveryModule.sol";
+import { SafeRecoveryModule } from "src/modules/SafeRecoveryModule.sol";
 import { SafeRecoverySubjectHandler } from "src/handlers/SafeRecoverySubjectHandler.sol";
 import { IntegrationBase } from "../IntegrationBase.t.sol";
 
@@ -43,8 +44,9 @@ abstract contract SafeIntegrationBase is IntegrationBase {
         );
         emailRecoveryManagerAddress = address(emailRecoveryManager);
 
-        EmailRecoveryModule emailRecoveryModule =
-            new EmailRecoveryModule(emailRecoveryManagerAddress);
+        SafeRecoveryModule emailRecoveryModule = new SafeRecoveryModule(emailRecoveryManagerAddress);
+        // EmailRecoveryModule emailRecoveryModule =
+        //     new EmailRecoveryModule(emailRecoveryManagerAddress);
         recoveryModuleAddress = address(emailRecoveryModule);
         emailRecoveryManager.initialize(recoveryModuleAddress);
 
@@ -76,9 +78,9 @@ abstract contract SafeIntegrationBase is IntegrationBase {
             moduleTypeId: MODULE_TYPE_EXECUTOR,
             module: recoveryModuleAddress,
             data: abi.encode(
-                address(accountAddress1),
-                isInstalledContext,
-                functionSelector,
+                // address(accountAddress1),
+                // isInstalledContext,
+                // functionSelector,
                 guardians1,
                 guardianWeights,
                 threshold,
