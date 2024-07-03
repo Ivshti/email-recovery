@@ -10,6 +10,8 @@ import { ECDSAOwnedDKIMRegistry } from
     "ether-email-auth/packages/contracts/src/utils/ECDSAOwnedDKIMRegistry.sol";
 import { EmailAuth } from "ether-email-auth/packages/contracts/src/EmailAuth.sol";
 
+import { MockValidator } from "modulekit/Mocks.sol";
+import { SafeFactory } from "modulekit/accounts/safe/SafeFactory.sol";
 import { Safe7579 } from "safe7579/Safe7579.sol";
 import { Safe7579Launchpad } from "safe7579/Safe7579Launchpad.sol";
 import { IERC7484 } from "safe7579/interfaces/IERC7484.sol";
@@ -44,6 +46,11 @@ contract DeploySafeRecovery_Script is Script {
             console.log("Deployed Email Auth at", emailAuthImpl);
         }
 
+        if (emailAuthImpl == address(0)) {
+            emailAuthImpl = address(new EmailAuth());
+            console.log("Deployed Email Auth at", emailAuthImpl);
+        }
+
         EmailRecoveryFactory factory = new EmailRecoveryFactory(verifier, emailAuthImpl);
         (address module, address manager, address subjectHandler) = factory
             .deployUniversalEmailRecoveryModule(
@@ -58,11 +65,22 @@ contract DeploySafeRecovery_Script is Script {
         address safe7579Launchpad =
             address(new Safe7579Launchpad{ salt: bytes32(uint256(0)) }(entryPoint, registry));
 
+        address defaultValidator = address(new MockValidator());
+        SafeFactory safeFactory = new SafeFactory();
+        bytes memory initData = safeFactory.getInitData(defaultValidator, "");
+        address predictedSafeAddress = safeFactory.getAddress(bytes32(uint256(0)), initData);
+
+        bytes4 functionSelector = bytes4(keccak256(bytes("swapOwner(address,address,address)")));
+
         console.log("Deployed Email Recovery Module at  ", vm.toString(module));
         console.log("Deployed Email Recovery Manager at ", vm.toString(manager));
         console.log("Deployed Email Recovery Handler at ", vm.toString(subjectHandler));
+
         console.log("Deployed Safe 7579 at              ", vm.toString(safe7579));
         console.log("Deployed Safe 7579 Launchpad at    ", vm.toString(safe7579Launchpad));
+        console.log("Deployed Mock Validator at         ", vm.toString(defaultValidator));
+
+        console.log("Predicted Safe address is          ", vm.toString(predictedSafeAddress));
 
         vm.stopBroadcast();
     }
