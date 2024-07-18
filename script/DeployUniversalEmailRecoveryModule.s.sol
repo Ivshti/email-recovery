@@ -15,7 +15,7 @@ contract DeployUniversalEmailRecoveryModuleScript is Script {
         vm.startBroadcast(vm.envUint("PRIVATE_KEY"));
         address verifier = vm.envOr("VERIFIER", address(0));
         address dkimRegistry = vm.envOr("DKIM_REGISTRY", address(0));
-        address dkimRegistrySigner = vm.envOr("DKIM_SIGNER", address(0));
+        address dkimRegistrySigner = vm.envOr("DKIM_REGISTRY_SIGNER", address(0));
         address emailAuthImpl = vm.envOr("EMAIL_AUTH_IMPL", address(0));
 
         if (verifier == address(0)) {
