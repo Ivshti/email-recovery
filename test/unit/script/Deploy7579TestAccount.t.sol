@@ -17,9 +17,11 @@ contract Deploy7579TestAccountTest is Test {
 
     function setUp() public {
         // Fork from base sepolia
-        vm.createSelectFork("https://sepolia.base.org");
+        vm.createSelectFork("https://sepolia.base.org", 12804601);
+        vm.warp(block.timestamp);
         vm.fee(1 gwei);
-        
+        vm.chainId(84532);
+
         // Set envs
         vm.setEnv(
             "PRIVATE_KEY", 
